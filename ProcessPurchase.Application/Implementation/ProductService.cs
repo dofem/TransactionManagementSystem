@@ -1,0 +1,58 @@
+﻿using ProcessPurchase.Application.Contract;
+using ProcessPurchase.Application.Request;
+using ProcessPurchase.Application.Response;
+using ProcessPurchase.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ProcessPurchase.Application.Implementation
+{
+    public class ProductService : IProductService
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ProductService(ApplicationDbContext context) 
+        { 
+            _context = context;
+        }
+
+        public async Task<ProductResponse> AddAProduct(AddProduct addProduct)
+        {
+          var product = _context.Products.Where(u => u.Name.ToUpper() == addProduct.Name.ToUpper()).FirstOrDefault();
+        if(product != null) 
+        {
+           return new ProductResponse { status = false, message = $"{product.Name} is already part of our collection" };
+        }
+        else
+        {
+            product.Name = addProduct.Name;
+            product.Price = addProduct.Price;
+            product.CategoryId = addProduct.CategoryId;
+            product.QuantityAvailable = 0;
+        }
+         _context.Products.Add(product);
+         _context.SaveChanges();
+            return new ProductResponse { status = true, message = $"{product.Name} added successfully" };
+        }
+
+
+
+        public async Task<ProductResponse> AddProductQuantity(int quantity, int id)
+        {
+            var product = _context.Products.Where(u => u.Id == id).FirstOrDefault();
+            if(product == null) 
+            {
+                return new ProductResponse { status = false , message = $"Product with id {id} doesnt exist in our collection" };
+            }
+            else
+            {
+                product.QuantityAvailable += quantity;
+            }
+            _context.SaveChanges();
+            return new ProductResponse { status = true,message = $"{quantity} quantity of {product.Name} added successfully" };
+        }
+    }
+}

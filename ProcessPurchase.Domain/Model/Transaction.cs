@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ProcessPurchase.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
+
 
 namespace ProcessPurchase.Domain.Model
 {
@@ -16,6 +17,6 @@ namespace ProcessPurchase.Domain.Model
         public decimal Amount { get; set; }
         public DateTime TransactionTime { get; set; }
         public TransactionType TransactionType { get; set; } // purchase,refund,transfer
-        public int WalletNumber { get; set; }
+        public string WalletId { get; set; }
     }
 }
