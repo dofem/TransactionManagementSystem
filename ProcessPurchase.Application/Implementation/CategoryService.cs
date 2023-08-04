@@ -21,18 +21,23 @@ namespace ProcessPurchase.Application.Implementation
 
         public async Task<CreateCategoryResponse>  CreateACategory(int id, string categoryName)
         {
+            var response = new CreateCategoryResponse();
             var category = _context.Categories.Where(c=>c.Id == id).FirstOrDefault();   
             if (category != null) 
             {
-                return new CreateCategoryResponse { status = false, message = $"Category with id {category.Id} already exist" };
+                response.status = false;
+                response.message = $"Category with id {category.Id} already exist";
             }
             else 
             { 
                 category.Id = id;
                 category.CategoryName = categoryName;
                 _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
             }
-            return new CreateCategoryResponse { status = true, message = $"category Name {category.CategoryName} created successfully" };
+            response.status = true; 
+            response.message = $"category Name {category.CategoryName} created successfully";
+            return response;
         }
     }
 }

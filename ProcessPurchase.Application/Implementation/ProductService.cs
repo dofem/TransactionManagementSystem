@@ -21,10 +21,12 @@ namespace ProcessPurchase.Application.Implementation
 
         public async Task<ProductResponse> AddAProduct(AddProduct addProduct)
         {
+            var response = new ProductResponse();
           var product = _context.Products.Where(u => u.Name.ToUpper() == addProduct.Name.ToUpper()).FirstOrDefault();
         if(product != null) 
         {
-           return new ProductResponse { status = false, message = $"{product.Name} is already part of our collection" };
+                response.status = false; 
+                response.message = $"{product.Name} is already part of our collection";
         }
         else
         {
@@ -33,15 +35,18 @@ namespace ProcessPurchase.Application.Implementation
             product.CategoryId = addProduct.CategoryId;
             product.QuantityAvailable = 0;
         }
-         _context.Products.Add(product);
-         _context.SaveChanges();
-            return new ProductResponse { status = true, message = $"{product.Name} added successfully" };
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            response.status = true; 
+            response.message = $"{product.Name} added successfully";
+            return response;
         }
 
 
 
         public async Task<ProductResponse> AddProductQuantity(int quantity, int id)
         {
+            var response = new ProductResponse();
             var product = _context.Products.Where(u => u.Id == id).FirstOrDefault();
             if(product == null) 
             {
@@ -51,8 +56,10 @@ namespace ProcessPurchase.Application.Implementation
             {
                 product.QuantityAvailable += quantity;
             }
-            _context.SaveChanges();
-            return new ProductResponse { status = true,message = $"{quantity} quantity of {product.Name} added successfully" };
+            await _context.SaveChangesAsync();
+            response.status = true;
+            response.message = $"{quantity} quantity of {product.Name} added successfully";
+            return response;
         }
     }
 }

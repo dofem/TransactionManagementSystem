@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "FurtherActionProcessing.Protos";
+
+
+
+service CustomerProfiling{
+        rpc GetCustomerProfile(CustomerProfileRequest) returns (CustomerProfileResponse);
+    }
+
+
+
+message CustomerProfileRequest{
+        int32 customerId = 1;
+    }
+
+message CustomerProfileResponse{
+        int32 customerId = 1;
+        string CustomerClass = 2;
+        double averagePurchaseAmount = 3;
+    }
+
+   

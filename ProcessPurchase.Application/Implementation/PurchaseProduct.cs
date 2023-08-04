@@ -9,6 +9,7 @@ using ProcessPurchase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,28 +26,33 @@ namespace ProcessPurchase.Application.Implementation
 
         public async Task<ProductResponse> PurchaseAProduct(PurchaseProductRequest request)
         {
+            var response = new ProductResponse();
             Product product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
             {
-                return new ProductResponse { status = false, message = "Product not found." };
+                response.status = false; 
+                response.message = "Product not found.";
             }
             decimal amount = product.Price * request.Quantity;
             CustomerInformation customer = await _context.CustomerInformation.FirstOrDefaultAsync(c => c.walletId == request.WalletId);
             if (customer == null)
             {
-                return new ProductResponse { status = false, message = "Customer not found." };
+                response.status = false; 
+                response.message = "Customer not found.";
             }
 
             // Verify the customer's password using the stored hash and salt
             if (!ApplicationManager.VerifyPassword(request.Password, customer.PasswordHash, customer.PasswordSalt))
             {
-                return new ProductResponse { status = false, message = "Incorrect walletId or password." };
+                response.status = false; 
+                response.message = "Incorrect walletId or password.";
             }
 
             // Check if the customer has enough balance for the purchase
             if (customer.Balance < amount)
             {
-                return new ProductResponse { status = false, message = "Insufficient balance." };
+                response.status = false; 
+                response.message = "Insufficient balance.";
             }
 
             Transaction newTransaction = new Transaction
@@ -63,7 +69,8 @@ namespace ProcessPurchase.Application.Implementation
             // Check if the requested quantity is available in the product stock
             if (product.QuantityAvailable < request.Quantity)
             {
-                return new ProductResponse { status = false, message = "Insufficient product quantity." };
+                response.status = false; 
+                response.message = "Insufficient product quantity.";
             }
 
             // Perform the purchase and update the customer's balance and product quantity
@@ -75,8 +82,13 @@ namespace ProcessPurchase.Application.Implementation
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
-            return new ProductResponse { status = true, message = "Purchase Initiated successful." };
+            response.status = true; 
+            response.message = "Purchase Initiated successful.";
+
+            return response;
         }
 
+
     }
+        
 }

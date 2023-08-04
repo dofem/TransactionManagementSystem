@@ -11,5 +11,6 @@ namespace ProcessPurchase.Application.Contract
     public interface IUserService
     {
         Task<CreateUserResponse> AddNewCustomer(CreateUser createUser);
+        Task<ProductResponse> TopUpWallet(TopUp topUpUser);
     }
 }

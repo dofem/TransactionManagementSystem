@@ -1,0 +1,5 @@
+﻿{
+  "GrpcSetting": {
+    "ServiceUrl": "https://localhost:5001"
+  }
+}
